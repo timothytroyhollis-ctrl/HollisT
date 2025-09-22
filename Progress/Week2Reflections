@@ -1,0 +1,15 @@
+What I Enjoyed This Week
+
+Starting with a setup chunk to load libraries and import the data made sense and flowed smoothly.
+
+Creating visualizations like bar graphs and radial plots felt rewarding.
+
+Easily finding answers to questions or enhancements I wanted to add in online resources
+
+What I Will Change Moving Forward
+
+I’ll inspect the data set more carefully up front to confirm variable names and data types before building visualizations and likely make a note outside of future data files so I am not continuing to load the file to get the exact naming convention
+
+Double check my own calculations, when I was cross checking the average sales quantity by region for the box plot, I misread East region as having 1846 not 1146 in quantity so when my R chunk calculated an average of 9.## I had calculated 14 and I checked and double checked my code, but not my data until I did a manual calculation then print statement after I plugged the data in Power BI and realized the print statement matched Power BI matched my box plot so it was more than an hour assuming it was the systemic response that was incorrect not my own calculation
+
+Certain items I wanted to do to add flare, like the value on the final radial chart being added to the slices took up time but in the end I could not get the values to fit and I created a table, which was something I was using from the beginning, so realizing when effort has a return vs. when it is just because I am hard headed and want it to work just because I want to say it worked, will be vital to my effective use of the technology.
