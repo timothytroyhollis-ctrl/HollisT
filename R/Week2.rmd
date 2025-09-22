@@ -1,0 +1,254 @@
+---
+title: "HollisT_Week2"
+author: "Tim Hollis"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Week 2 Markdown: Graphs in R
+
+Loading file for this weeks assignment
+
+```{r load-data}
+week2_data <- read.csv("C:/Users/slimt/OneDrive/Desktop/School shit/R/week2_data.csv")
+```
+
+## Setting up library access for all visualizations 
+
+```{r library setup,echo=TRUE,message=FALSE,warning=FALSE}
+
+library(dplyr)
+library(ggplot2)
+library(scales)
+library(lubridate)
+library(ggrepel)
+```
+
+
+## Bar graph the amount of sales by product
+
+```{r sales-barplot, echo=TRUE, message=FALSE, warning=FALSE}
+
+sales_summary<-week2_data %>%
+  group_by(Product) %>%
+  summarise(total_sales=sum(TotalSales))
+
+ggplot(sales_summary,aes(x=Product,y=total_sales,fill=Product)) +
+  geom_bar(stat='identity') +
+  geom_text(aes(label=sprintf('$%.2f',total_sales)),vjust=-0.5,size=4) +
+  labs(title='Total Sales by Product',x='Product',y='Total Sales') +
+  scale_y_continuous(labels=scales::label_dollar())
+```
+
+
+## Pie Chart showing the amount of sales by region
+
+```{r region-piechart,echo=TRUE,message=FALSE,warning=FALSE}
+
+region_summary<-week2_data %>%
+  group_by(Region) %>%
+  summarise(total_sales=sum(TotalSales))
+
+ggplot(region_summary,aes(x='',y=total_sales,fill=Region)) +
+  geom_bar(stat='identity',width=1) +
+  coord_polar(theta='y') +
+  geom_text(aes(label=sprintf('$%.2f',total_sales)),
+           position=position_stack(vjust=0.5),
+           color='white',size=4) +
+  labs(title='Total Sales by Region',fill='Region') +
+  theme_void() +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))
+```
+
+## Box Plot showing Revenue of Sales by Region
+```{r average-sales-regionally-boxplot, echo=TRUE, message=FALSE, warning=FALSE}
+
+avg_sales<-week2_data %>%
+  group_by(Region) %>%
+  summarise(mean_sales=mean(TotalSales))
+
+outliers<-week2_data %>%
+  group_by(Region) %>%
+  mutate(is_outlier=TotalSales<quantile(TotalSales,0.25)-1.5*IQR(TotalSales)|
+                    TotalSales>quantile(TotalSales,0.75)+1.5*IQR(TotalSales)) %>%
+  filter(is_outlier)
+                                                                
+
+ggplot(week2_data,aes(x=Region,y=TotalSales,fill=Region)) +
+  geom_boxplot() +
+  geom_text_repel(data = outliers,
+                  aes(x = Region, y = TotalSales, label = sprintf("$%.2f", TotalSales)),
+                  size = 3, color = "black", max.overlaps = Inf) +  # 👈 This is the new layer
+  geom_text(data = avg_sales,
+            aes(x = Region, y = mean_sales + 50, label = sprintf("$%.2f", mean_sales)),
+            color = "black", size = 4) +
+  labs(
+    title = "Average Distribution of Sales and Outliers",
+    subtitle = "Black dots outside the boxes represent outlier sales values",
+    x = "Region",
+    y = "Total Sales"
+  ) +
+  scale_y_continuous(labels = scales::label_dollar()) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, size = 16, face = "bold"))
+
+```
+
+## Box Plot showing Quantity of Sales by Region
+
+```{r region averages, echo=TRUE, message=FALSE, warning=FALSE}
+
+region_avg_table <- week2_data %>%
+  filter(Region%in% c('North','South','East','West')) %>%
+  group_by(Region) %>%
+  summarise(
+    Total_Quantity=sum(Quantity),
+    Number_of_Sales=n()
+  ) %>%
+  mutate(
+    Average_Quantity=Total_Quantity/ Number_of_Sales,
+    Share=Total_Quantity/sum(Total_Quantity)
+  )
+
+ggplot(week2_data,aes(x=Region,y=Quantity,fill=Region)) +
+  geom_boxplot(outlier.shape=NA,alpha=0.6) +
+  stat_summary(fun=mean,geom='point',shape=20,size=3,color='black') +
+  
+  geom_text(data=region_avg_table,
+            aes(x=Region,y=max(week2_data$Quantity) + 10,
+                label=sprintf('Avg Qty: %.2f', Average_Quantity)),
+            size=4,color='black') +
+  
+  geom_text(data=region_avg_table,
+            aes(x=Region,y=max(week2_data$Quantity)+20,
+                label=paste0('Share: ',scales::percent(Share,accuracy=0.1))),
+            size =4,color='black') +
+  
+  labs(
+    title='Distribution of Quantity Sold per Sale by Region',
+    x ='Region',
+    y ='Quantity'
+  ) +
+  theme_minimal() +
+  theme(legend.position='none')
+```
+
+## Histogram of the count of orders by product
+
+```{r histogram-orders-by-product, echo=TRUE, message=FALSE, warning=FALSE}
+
+product_order_counts<-week2_data %>%
+  count(Product,name='Order_Count')
+
+ggplot(product_order_counts,aes(x=reorder(Product,Order_Count),y=Order_Count,fill=Product)) +
+  geom_col(width=0.7,show.legend=FALSE) +
+  geom_text(aes(label=Order_Count),vjust=-0.5,size=3,color='black') +
+  labs(
+    title='Order Counts by Product',
+    x='Product',
+    y='Number of Orders'
+  ) +
+  theme_minimal(base_size=12) +
+  theme(
+    axis.text.x=element_text(angle=45,hjust=1),
+    plot.title=element_text(face='bold',size=14,hjust=0.5),
+    axis.title.x=element_text(margin=margin(t=10)),
+    axis.title.y=element_text(margin=margin(r= 10))
+  )
+```
+
+## Radial Graph showing Sales by Month
+
+```{r radial-sales-by-month, echo=TRUE, message=FALSE, warning=FALSE}
+
+monthly_sales <- week2_data %>%
+  mutate(OrderDate_parsed = mdy(OrderDate)) %>%
+  mutate(Month = month(OrderDate_parsed, label = TRUE, abbr = TRUE)) %>%
+  group_by(Month) %>%
+  summarise(TotalSales = sum(TotalSales)) %>%
+  arrange(Month)
+
+top_month <- monthly_sales %>% slice_max(TotalSales, n = 1)
+bottom_month <- monthly_sales %>% slice_min(TotalSales, n = 1)
+median_month <- monthly_sales %>% arrange(TotalSales) %>% slice(n() %/% 2 + 1)
+
+ggplot(monthly_sales, aes(x = Month, y = TotalSales, fill = Month)) +
+  geom_bar(stat = 'identity', width = 1, color = 'white', show.legend = FALSE) +
+  coord_polar(start = 0) +
+  labs(
+    title = 'Total Sales by Month',
+    subtitle = paste0(
+      "Highest: ", top_month$Month, " ($", format(round(top_month$TotalSales, 2), big.mark = ","), ")   ",
+      "Lowest: ", bottom_month$Month, " ($", format(round(bottom_month$TotalSales, 2), big.mark = ","), ")   ",
+      "Median: ", median_month$Month, " ($", format(round(median_month$TotalSales, 2), big.mark = ","), ")"
+    ),
+    x = '',
+    y = ''
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    axis.text.y = element_blank(),
+    axis.text.x = element_text(size = 10, face = 'bold'),
+    plot.title = element_text(face = 'bold', size = 14, hjust = 0.5),
+    plot.subtitle = element_text(size = 11, hjust = 0.5, margin = margin(t = 10, b = 10)),
+    panel.grid = element_blank()
+  )
+
+monthly_sales %>%
+  select(Month, TotalSales) %>%
+  arrange(desc(TotalSales)) %>%
+  mutate(TotalSales = dollar(TotalSales, accuracy = 0.01)) %>%
+  knitr::kable(
+    caption = "Monthly Sales Totals",
+    col.names = c("Month", "Total Sales"),
+    align = "c"
+  )
+```
+
+### What I Enjoyed This Week
+
+- Starting with a setup chunk to load libraries and import the data made sense and flowed smoothly.
+- Creating visualizations like bar graphs and radial plots felt rewarding.
+- Easily finding answers to questions or enhancements I wanted to add in online resources
+
+
+### What I Will Change Moving Forward
+
+- I’ll inspect the data set more carefully up front to confirm variable names and data types before building visualizations and likely make a note outside of future data files so I am not continuing to load the file to get the exact naming convention
+- Double check my own calculations, when I was cross checking the average sales quantity by region for the box plot, I misread East region as having 1846 not 1146 in quantity so when my R chunk calculated an average of 9.## I had calculated 14 and I checked and double checked my code, but not my data until I did a manual calculation then print statement after I plugged the data in Power BI and realized the print statement matched Power BI matched my box plot so it was more than an hour assuming it was the systemic response that was incorrect not my own calculation
+- Certain items I wanted to do to add flare, like the value on the final radial chart being added to the slices took up time but in the end I could not get the values to fit and I created a table, which was something I was using from the beginning, so realizing when effort has a return vs. when it is just because I am hard headed and want it to work just because I want to say it worked, will be vital to my effective use of the technology.
+
+
+### Supplement Sources along with the weekly reading assignment
+
+
+MathAdamSpiegler. (2022, August 18). Creating a new R markdown file [Video]. YouTube. https://www.youtube.com/watch?v=qWCE-j_8ypg
+
+Posit PBC. (2021, August 26). R Markdown Advanced Tips to become a Better Data Scientist & RStudio Connect | with Tom Mock [Video]. YouTube. https://www.youtube.com/watch?v=WkF7nqEYF1E
+
+Profesa Princi. (2021, October 14). R Markdown: Loading data files [Video]. YouTube. https://www.youtube.com/watch?v=8WtHQOIfj1k
+
+R for Ecology. (2022, January 10). R Markdown TUTORIAL | A powerful tool for LEARNING R (IN 45 MINUTES) [Video]. YouTube. https://www.youtube.com/watch?v=K418swtFnik
+
+R Programming 101. (2021, March 15). Bar charts and Histograms using ggplot in R [Video]. YouTube. https://www.youtube.com/watch?v=n_ACYLWUmos
+
+Roger Peng. (2015, May 8). R Markdown with RStudio [Video]. YouTube. https://www.youtube.com/watch?v=DNS7i2m4sB0
+
+The Data Digest. (2023, July 23). How to Create Pie Charts in R (6 easy ways) [Video]. YouTube. https://www.youtube.com/watch?v=AHRh4yyHl4g
+
+
+
+
+
+
+
+
+
+
+
+
