@@ -1,0 +1,12 @@
+# ============================================
+# Title: Assignment 1.1
+# Author: Tim Hollis
+# Date: 14 September 2025
+# Modified By: Tim Hollis
+# Description: This program demonstrates the use of the print function to create a message specific
+# to the instructions for this assignment
+# ============================================
+
+print("Hello World")
+
+
