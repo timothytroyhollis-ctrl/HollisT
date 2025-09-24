@@ -14,31 +14,50 @@
 #Date Moved to Production: 09/24/2025
 
 #Change#:2
-#Change: Replaced flat rate pricing ($0.95/ft) from previous assignment
-#        to reflect volume-based discounts and tiered pricing
-#Lines Impacted: 48-56
+#Change: Enabled timestamp display in receipt output
+#        to reflect date and time of transaction
+#Lines Affected: 63-67
 #Date of Change: 09/24/2025
 #Author: Tim Hollis
 #Change Approved by: Tim Hollis
 #Date Moved to Production: 09/24/2025
 
 #Change#:3
-#Change: Added proximity alert logic to notify users
-#        when they are within 10% of the next pricing tier
-#Lines Impacted: 60-77, 114-122
+#Change: Replaced flat rate pricing ($0.95/ft) from previous assignment
+#        to reflect volume-based discounts and tiered pricing
+#Lines Impacted: 76-84
 #Date of Change: 09/24/2025
 #Author: Tim Hollis
 #Change Approved by: Tim Hollis
 #Date Moved to Production: 09/24/2025
 
 #Change#:4
-#Change: Wrapped feet input and pricing logic in a loop
-#        to allow users to revise their purchase amount before payment
-#Lines Impacted: 119-120
+#Change: Added proximity alert logic to notify users
+#        when they are within 10% of the next pricing tier
+#Lines Impacted: 88-106
 #Date of Change: 09/24/2025
 #Author: Tim Hollis
 #Change Approved by: Tim Hollis
 #Date Moved to Production: 09/24/2025
+
+#Change#:5
+#Change: Wrapped feet input and pricing logic in a loop
+#        to allow users to revise their purchase amount before payment
+#Lines Impacted: 126-146
+#Date of Change: 09/24/2025
+#Author: Tim Hollis
+#Change Approved by: Tim Hollis
+#Date Moved to Production: 09/24/2025
+
+#Change#:6
+#Change: Added input validation loop to ensure user response
+#        to proximity upgrade prompt is limited to 'y' or 'n'
+#Lines Affected: 137-142
+#Date of Change: 09/24/2025
+#Author: Tim Hollis
+#Change Approved by: Tim Hollis
+#Date Moved to Production: 09/24/2025
+
 
 
 #Importing Datetime
@@ -115,8 +134,12 @@ while True:
     proximity_message=check_proximity(feet_requested)
     if proximity_message:
         print(proximity_message)
-        revise=input('Would you like to add to your purchase today? (y/n):'
-        ).strip().lower()
+        while True:
+            revise=input('Would you like to add to your purchase today? (y/n):'
+                         ).strip().lower()
+            if revise in ['y','n']:
+                break
+            print('Please enter y for yes, or n for no.')
         if revise=='y':
             feet_requested=float(input('Enter new amount of cable needed in feet: '))
             continue #Allow user to edit the amount they are purchasing
