@@ -1,11 +1,9 @@
 #DSC 510
-#Week 3
-#Programming Assignment 3.1
+#Week 4
+#Programming Assignment 4.1
 #Author: Tim Hollis
-#09/24/2025
-
-#Change Control Log:
-
+#10/1/2025
+#===========================Change Control Log:===========================
 #Change#:1
 #Change: Removed prior change logs, changed made prior to publishing
 #Date of Change: 09/24/2025
@@ -58,22 +56,23 @@
 #Change Approved by: Tim Hollis
 #Date Moved to Production: 09/24/2025
 
+#Change#:7
+#Change: Defined main function, moved all code to run inside function
+#Lines Affected: 73-190
+#Date of Change: 10/1/2025
+#Author: Tim Hollis
+#Change Approved by: Tim Hollis
+#Date Moved to Production: 10/1/2025
+#=======================================================================
 
 
 #Importing Datetime
-
 from datetime import datetime
 
-from nbclient.client import timestamp
-
-#Welcome message to user
-
-print('Welcome to the Fierce and Fabulous Fiber Optic Cost Calculator')
-
-
-#Define Pricing Tiers
+#-----Function: tiered_pricing-----
 
 def tiered_pricing(length):
+    """Defines bulk discount and tiered pricing based on feet purchased"""
     if length <= 100:
         return 0.95
     elif length <= 250:
@@ -83,9 +82,10 @@ def tiered_pricing(length):
     else:
         return 0.55
 
-#Creating Proximity check and statement if within 10% of next tier
+#----Function: check_proximity-----
 
 def check_proximity(length):
+    """Provides proximity to price reduction for feet within 10% of next pricing"""
     tiers=[
         (100,0.95),
         (250,0.85),
@@ -105,86 +105,83 @@ def check_proximity(length):
             break
     return None
 
-#Request the company name from user
+#-----Function: calculate_cost------
 
-company_name=input('Please enter your company name: ')
+def calculate_cost(feet, price_per_foot):
+    """Calculate total installation cost based on feet and price per foot"""
+    return feet*price_per_foot
 
-#Request # of feet from user - include error handling for any amount <0
+#------------Main Program-----------
 
-while True:
-    try:
-        feet_requested=float(input("Enter fiber optic cable length needed in feet: "))
-        if feet_requested<=0:
-            print('Sorry, I cannot sell you that amount, please enter a value above zero')
-        else:
-            break # Valid input-exit the loop
-    except ValueError:
-        print('Invalid response, please enter a numeric value.')
+def main():
+    print('='*62)
+    print('Welcome to the Fierce and Fabulous Fiber Optic Cost Calculator')
+    print('='*62)
 
-#Calculate tiered pricing and total cost
+    company_name=input('Please enter your company name: ')
 
-while True:
-    cost_per_foot=tiered_pricing(feet_requested)
-    total_cost=feet_requested*cost_per_foot
-    print(f'\nPrice per foot: ${cost_per_foot:.2f}')
-    print(f'Total for {feet_requested} feet is ${total_cost:.2f}')
+    while True:
+        try:
+            feet_requested=float(input("Enter fiber optic cable length needed in feet: "))
+            if feet_requested<=0:
+                print('Sorry, I cannot sell you that amount, please enter a value above zero')
+            else:
+                break # Valid input-exit the loop
+        except ValueError:
+            print('Invalid response, please enter a numeric value.')
 
-#Check for proximity to price reduction
+    while True:
+        cost_per_foot=tiered_pricing(feet_requested)
+        total_cost=calculate_cost(feet_requested, cost_per_foot)
+        print(f'\nPrice per foot: ${cost_per_foot:.2f}')
+        print(f'Total for {feet_requested} feet is ${total_cost:.2f}')
 
-    proximity_message=check_proximity(feet_requested)
-    if proximity_message:
-        print(proximity_message)
-        while True:
-            revise=input('Would you like to add to your purchase today? (y/n):'
-                         ).strip().lower()
-            if revise in ['y','n']:
-                break
-            print('Please enter y for yes, or n for no.')
-        if revise=='y':
-            feet_requested=float(input('Enter new amount of cable needed in feet: '))
-            continue #Allow user to edit the amount they are purchasing
-    break #exit the loop if no revision
+        proximity_message=check_proximity(feet_requested)
+        if proximity_message:
+            print(proximity_message)
+            while True:
+                revise=input('Would you like to add to your purchase today? (y/n):'
+                             ).strip().lower()
+                if revise in ['y','n']:
+                    break
+                print('Please enter y for yes, or n for no.')
+            if revise=='y':
+                feet_requested=float(input('Enter new amount of cable needed in feet: '))
+                continue #Allow user to edit the amount they are purchasing
+        break #exit the loop if no revision
 
-# Prompt for payment; cash payment is hard-coded as the only option
+    while True:
+        try:
+            cash_rendered=float(input('Enter cash amount rendered: '))
+            if cash_rendered<total_cost:
+                print('Sorry, insufficient amount to cover the purchase cost')
+            else:
+                break # Acceptable amount input-exit the loop
+        except ValueError:
+            print('Invalid response, please enter a numeric value.')
 
-while True:
-    try:
-        cash_rendered=float(input('Enter cash amount rendered: '))
-        if cash_rendered<total_cost:
-            print('Sorry, insufficient amount to cover the purchase cost')
-        else:
-            break # Acceptable amount input-exit the loop
-    except ValueError:
-        print('Invalid response, please enter a numeric value.')
+    change_given=cash_rendered-total_cost
+    timestamp=datetime.now().strftime('%m/%d/%Y %I:%M:%S %p')
+    standard_price=0.95
+    standard_total=feet_requested*standard_price
+    savings=standard_total-total_cost if feet_requested>100 else 0
 
-#Calculate Change
+    print('\n'+'-'*50)
+    print('Installation Receipt'.center(50))
+    print(f'Date and Time: {timestamp}')
+    print(f'Company Name: {company_name}')
+    print(f'Length of Fiber Optic Cable Purchased: {feet_requested:.2f} feet')
+    print(f'Price per foot: ${cost_per_foot:.2f}')
+    print(f'Total Cost of Installation: ${total_cost:.2f}')
+    print(f'Cash Rendered: ${cash_rendered:.2f}')
+    print(f'Change Given: ${change_given:.2f}')
+    if feet_requested>100:
+        print(f'By purchasing {feet_requested:.2f} feet you saved ${savings:.2f}')
+    print('-'*50)
+    print('Thank you for your payment!')
+    print('Your Fabulous Fiber Fantasy is now a reality!')
 
-change_given=cash_rendered-total_cost
+#------------------Entry Point------------------
 
-#Receipt inclusion calculations
-
-timestamp=datetime.now().strftime('%m/%d/%Y %I:%M:%S %p')
-standard_price=0.95
-standard_total=feet_requested*standard_price
-savings=standard_total-total_cost if feet_requested>100 else 0
-
-#Print receipt
-
-print('\n'+'-'*50)
-print('Installation Receipt'.center(50))
-print(f'Date and Time: {timestamp}')
-print(f'Company Name: {company_name}')
-print(f'Length of Fiber Optic Cable Purchased: {feet_requested:.2f} feet')
-print(f'Price per foot: ${cost_per_foot:.2f}')
-print(f'Total Cost of Installation: ${total_cost:.2f}')
-print(f'Cash Rendered: ${cash_rendered:.2f}')
-print(f'Change Given: ${change_given:.2f}')
-
-if feet_requested>100:
-    print(f'By purchasing {feet_requested:.2f} feet you saved ${savings:.2f}')
-print('-'*50)
-
-#Cheeky Gratitude Message
-
-print('Thank you for your payment!')
-print('Your Fabulous Fiber Fantasy is now a reality!')
+if __name__ == '__main__':
+    main()
