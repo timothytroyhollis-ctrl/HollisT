@@ -1,0 +1,296 @@
+---
+title: "HollisT_Week5"
+author: "Tim Hollis"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+
+# Load required libraries
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(gridExtra)
+library(scales)
+
+# Function to format numbers without scientific notation
+format_number <- function(x) {
+  format(x, scientific = FALSE, big.mark = ',')
+}
+
+# Set ggplot2 theme globally
+theme_set(theme_minimal())
+```
+
+# Probability Theory: Modeling Uncertainty
+
+Probability theory is the mathematical framework for quantifying uncertainty. 
+It allows us to model random events, calculate expected outcomes, and simulate
+systems where chance plays a role. It helps us understand not what will happen,
+but what tends to happen over many trials.
+
+Key concepts include:
+
+- **Sample Space**: The set of all possible outcomes.
+- **Random Variables**: Variables whose values depend on chance.
+- **Probability Distributions**: Functions that assign likelihoods to outcomes.
+- **Expected Value**: The long-run average outcome, weighted by probabilities.
+
+
+## License Plate Combinations
+
+We need to calculate how many different license plates can be made from six 
+digits. Since each position can be any digit from 0-9, and positions are 
+independent, we use the multiplication principle of counting.
+
+```{r license-plate-combos}
+
+license_plate_combinations<-10^6
+
+format_number(license_plate_combinations)
+
+# Create visualization of digit combinations
+digit_positions <- data.frame(
+  Position = factor(1:6, levels = 1:6),
+  Possible_Digits = rep(10, 6)
+)
+
+ggplot(digit_positions, aes(x = Position, y = Possible_Digits)) +
+  geom_col(fill = "steelblue", alpha = 0.8) +
+  geom_text(aes(label = paste0("10\noptions")), vjust = -0.5, size = 3) +
+  labs(title = "License Plate Digit Combinations",
+       subtitle = "Each of 6 positions has 10 possible digits (0-9)",
+       y = "Number of Possible Digits",
+       caption = paste("Total combinations:", format_number(license_plate_combinations))) +
+  theme_minimal() +
+  ylim(0, 12)
+```
+
+### Summary
+
+There are 10 possible digits for each of the 6 positions, so the total number of
+unique license plates is: **10⁶ = 1,000,000**
+
+## Probability of Getting "Heads" Three Times in a Row
+
+We calculate the probability of three consecutive heads in coin flips. Each flip
+is independent with P(Heads) = 0.5, so we multiply probabilities.
+
+```{r heads-x-3}
+
+prob_heads_3 <- 0.5^3
+format_number(prob_heads_3)
+
+# Generate all possible outcomes for 3 coin flips
+coin_flips <- expand.grid(
+  flip1 = c('H', 'T'),
+  flip2 = c('H', 'T'), 
+  flip3 = c('H', 'T')
+) %>%
+  mutate(
+    outcome = paste0(flip1, flip2, flip3),
+    three_heads = ifelse(outcome == 'HHH', 'HHH (Success)', 'Other Outcomes'),
+    probability = 1/8
+  )
+
+# Create visualization
+ggplot(coin_flips, aes(x = reorder(outcome, probability), y = probability, fill = three_heads)) +
+  geom_col(alpha = 0.9) +
+  geom_text(aes(label = paste0(outcome, "\n", percent(probability))), 
+            position = position_stack(vjust = 0.5), size = 3) +
+  scale_fill_manual(values = c('HHH (Success)' = '#2E8B57', 'Other Outcomes' = 'red')) +
+  coord_flip() +
+  labs(title = "Probability of Coin Flip Outcomes (3 Flips)",
+       subtitle = "Highlighting P(Three Heads) = 0.125",
+       x = "Outcome Sequence", 
+       y = "Probability",
+       fill = "Outcome Type") +
+  theme(legend.position = "bottom")
+```
+
+### Summary
+
+The probability of flipping heads three times in a row is:
+
+**0.5 × 0.5 × 0.5 = .0125 or 12.5%** as the visual shows, one out of 8 scenarios, 
+where the coin is tossed three times, results in HHH (3 heads)
+
+## Probability of Drawing Ace of Spades then Two of Hearts
+
+```{r Ace-then-2}
+
+prob_cards <- (1/52)*(1/51) 
+format_number(prob_cards)
+
+# Create visualization of the probability tree
+card_stages <- data.frame(
+  Stage = factor(c("First Draw", "Second Draw"), levels = c("First Draw", "Second Draw")),
+  Cards_Remaining = c(52, 51),
+  Probability = c(1/52, 1/51)
+)
+
+ggplot(card_stages, aes(x = Stage, y = Probability, group = 1)) +
+  geom_line(color = "darkred", size = 1) +
+  geom_point(size = 3, color = "darkred") +
+  geom_text(aes(label = paste0("1/", Cards_Remaining, "\n≈", round(Probability, 4))), 
+            vjust = -1, size = 3.5) +
+  labs(title = "Card Drawing Probability: Ace of Spades then Two of Hearts",
+       subtitle = "Dependent Events Without Replacement",
+       y = "Probability of Desired Card") +
+  ylim(0, 0.03)
+```
+
+### Summary
+
+The probability of drawing the Ace of Spades followed by the Two of Hearts is:
+
+**(1/52) × (1/51) ≈ 0.000377**
+
+This is a compound probability with no replacement. After drawing one card, only
+51 remain. The multiplication rule applies because both events are dependent.
+
+
+## Conditional Dice Probability
+
+Given the first die shows 6, we find the probability that the sum equals 9. 
+This is conditional probability where we only consider outcomes where the first
+die is 6.
+
+```{r prob-sum-9-given-6}
+
+prob_sum_9_given_6 <- 1/6
+format_number(prob_sum_9_given_6)
+
+# Create corrected dice outcomes table
+dice_outcomes <- data.frame(
+  second_die = 1:6,
+  sum = 6 + 1:6,
+  probability = rep(1/6, 6),  # Each outcome has equal probability
+  is_target = ifelse(1:6 == 3, "Sum = 9 (Success)", "Other Sums")
+)
+
+ggplot(dice_outcomes, aes(x = factor(second_die), y = probability, fill = is_target)) +
+  geom_col(width = 0.7, alpha = 0.9) +
+  geom_text(aes(label = paste0("Die: ", second_die, "\nSum: ", sum, "\n", round(probability * 100, 1), "%")), 
+            position = position_stack(vjust = 0.5), size = 3.2, lineheight = 0.8) +
+  scale_fill_manual(values = c('Sum = 9 (Success)' = '#2E8B57', 'Other Sums' = '#4682B4')) +
+  scale_y_continuous(labels = percent_format()) +
+  labs(title = "Conditional Probability: Sum = 9 Given First Die = 6",
+       subtitle = paste("P(Sum=9 | First Die=6) = 1/6 ≈", round(prob_sum_9_given_6, 4)),
+       x = "Second Die Value", 
+       y = "Probability",
+       fill = "Outcome") +
+  theme(legend.position = "bottom")
+```
+### Summary
+
+Given the first die shows a 6, the probability that the total equals 9 is:
+
+**1/6 ≈ 0.1667, or 16.67%**
+
+Only one value (3) on the second die will result in a total of 9. Since all 
+outcomes are equally likely, the conditional probability is 1 out of 6.
+
+
+## EV: Investment Decision
+
+```{r Investment-EV}
+
+ev_investment <- (0.3 * 70000) + (0.7*-40000)
+format_number(ev_investment)
+
+investment_data <- data.frame(
+  scenario = c('Gain $70,000', 'Lose $40,000'),
+  probability = c(0.3, 0.7),
+  value = c(70000, -40000),
+  ev_contribution = c(0.3 * 70000, 0.7 * -40000)
+)
+
+# Create comprehensive EV visualization
+p1 <- ggplot(investment_data, aes(x = scenario, y = probability, fill = value > 0)) +
+  geom_col(alpha = 0.8) +
+  geom_text(aes(label = percent(probability)), vjust = -0.5, size = 4) +
+  scale_fill_manual(values = c('TRUE' = '#2E8B57', 'FALSE' = '#DC143C')) +
+  labs(title = "A) Outcome Probabilities",
+       x = "", y = "Probability") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+p2 <- ggplot(investment_data, aes(x = scenario, y = ev_contribution, fill = value > 0)) +
+  geom_col(alpha = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black") +
+  geom_text(aes(label = paste0('$', format_number(ev_contribution))), 
+            vjust = ifelse(investment_data$ev_contribution > 0, -0.5, 1.2), 
+            size = 4) +
+  geom_text(x = 1.5, y = ev_investment, 
+            label = paste("Overall EV: $", format_number(ev_investment)), 
+            vjust = -0.5, size = 5, color = "red", fontface = "bold") +
+  scale_fill_manual(values = c('TRUE' = '#2E8B57', 'FALSE' = '#DC143C')) +
+  labs(title = "B) Expected Value Contributions",
+       x = "", y = "EV Contribution ($)") +
+  theme(legend.position = "none") +
+  ylim(c(-50000, 30000))
+
+grid.arrange(p1, p2, ncol = 2)
+```
+
+### Summary
+
+Because the result of adding a 70% chance of losing $40,000 and 30% chance of 
+gaining $70,000, comes out to a -$7,000, this would not be a wise investment based 
+solely on EV analysis.
+
+## EV: Lottery Ticket
+
+Lottery EV considers all possible prizes weighted by their probabilities, minus 
+the ticket cost. Most lotteries have negative EV, making them poor financial 
+investments
+
+```{r Lottery-EV}
+
+total_tickets <- 5000000
+
+# Calculate lottery probabilities and values
+lottery_data <- data.frame(
+  prize_tier = c('Grand Prize\n$200,000', 'Second Prize\n$1,000', 
+                 'Third Prize\n$300', 'Fourth Prize\n$10', 'No Prize\n$0'),
+  num_winners = c(1, 5, 15, 25, total_tickets - 46),
+  prize_value = c(200000, 1000, 300, 10, 0),
+  net_value = c(200000-2, 1000-2, 300-2, 10-2, -2)  # Subtract ticket cost
+)
+
+# Calculate probabilities and EV contributions
+lottery_data$probability <- lottery_data$num_winners / total_tickets
+lottery_data$ev_contribution <- lottery_data$probability * lottery_data$net_value
+ev_lottery <- sum(lottery_data$ev_contribution)
+
+# Create lottery visualization focusing on EV
+ggplot(lottery_data, aes(x = reorder(prize_tier, -ev_contribution), 
+                         y = ev_contribution, fill = ev_contribution > 0)) +
+  geom_col(alpha = 0.8) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "black", size = 1) +
+  geom_hline(yintercept = ev_lottery, linetype = "dashed", color = "red", size = 1) +
+  geom_text(aes(label = paste0("$", round(ev_contribution, 6))), 
+            vjust = ifelse(lottery_data$ev_contribution > 0, -0.5, 1.2), 
+            size = 3) +
+  geom_text(x = 3, y = ev_lottery, 
+            label = paste("Overall Expected Value:\n$", round(ev_lottery, 6)), 
+            vjust = -0.5, size = 4.5, color = "red", fontface = "bold") +
+  scale_fill_manual(values = c('TRUE' = '#2E8B57', 'FALSE' = '#DC143C')) +
+  labs(title = "Lottery Ticket Expected Value Analysis",
+       subtitle = "Based on 5 million tickets sold at $2 per ticket",
+       x = "Prize Tier", 
+       y = "Expected Value Contribution ($)",
+       fill = "Positive EV?") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none")
+```
+
+
+### Summary
+
+With a negative expected value, purchasing this lottery ticket represents a poor
+financial decision on average.
