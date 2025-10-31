@@ -4,6 +4,21 @@ author: "Tim Hollis"
 date: "`r Sys.Date()`"
 output: html_document
 ---
+Assignment:
+
+Answer each of the following questions using R. I know, we all kind of hate these types of problems!
+
+
+
+In Markdown at the start of your .r file, describe probability theory.
+How many different license plates can be made from six digits?
+When flipping a coin, what is the probability you will get heads three times in a row? Create a visualization of this. There are code examples in the book’s GitHub.
+Given a standard 52 card deck of cards, what is the probability you’ll randomly draw an Ace of Spades and then Two of Hearts in a row?
+Given two fair dice are rolled where each of the 36 possible outcomes is equally likely. Knowing that the first die shows a 6, what is the probability that the sum of the two dice equals 9?
+You want to invest, and you have a 30% chance of making $70,000 and 70% chance of losing $ 40,000. Should you invest? Explain.
+A $2 lottery ticket offers a grand prize of $200,000; 5 losers are winners prizes each pay $1000; 15 third-place prizes each pay $300; and 25 fourth-place prizes each pay $10. Find the expected value of entering this contest if 5 million tickets are sold.
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
@@ -384,3 +399,4 @@ missing values, or unexpected inputs to make my code more robust.
 of nesting too many operations in one line.
  
   
+
