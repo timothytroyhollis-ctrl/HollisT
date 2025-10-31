@@ -7,6 +7,18 @@ editor_options:
   markdown: 
     wrap: 72
 ---
+Assignment:
+
+Using this dataset, perform the following transformations.
+
+
+
+Scale the numerical data.
+Fix any skew as best you can.
+Normalize any columns not normalized using any of the available techniques (don’t use the same technique twice).
+Using data simulation, fill in the missing values for the release_date variable (not the others).
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo=TRUE,warning=FALSE,message=FALSE)
@@ -594,3 +606,4 @@ As I continue developing, I’ll prioritize readability alongside
 functionality. I’ve seen firsthand how spacing, structure, and modular
 chunking can turn a dense assignment into a transparent and more
 understandable workflow
+
