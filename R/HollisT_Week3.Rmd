@@ -4,6 +4,26 @@ author: "Tim Hollis"
 date: "`r Sys.Date()`"
 output: html_document
 ---
+Assignment:
+
+Taking the same data set from Week 2, use R to create all of the descriptive statistical values and plots you learned this week. This week, R Markdown should be used to explain the statistical meaning and importance of what you’re doing; be critical, curious, and opinionated.
+
+
+
+Specifically, for each numeric attribute in the dataset:
+
+
+
+Show the distributions of values visually. Explain, in comments, what those distributions mean statistically. Be thorough.
+Show the values of central tendency, both numerically and visually. Interpret those values in your own words in Markdown.
+Show the measures of dispersion, visually and numerically (where appropriate). Interpret those values in Markdown.
+Visually depict the Interquartile range. Interpret the IQR for the dataset (in Markdown).
+Create the statistics moments for the dataset.
+Experiment with histogram binning for the categorical data in R. This is open-ended intentionally because this dataset isn’t ideal for binning, but I want you to build something using binning just to see how it works.
+
+
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -704,4 +724,5 @@ Comparing these results to the cleaned CorrectedSales analysis highlights the
 importance of preprocessing, not just for removing errors, but for restoring 
 completeness. The raw data tells a fragmented story; the cleaned data fills in 
 the gaps. Together, they illustrate the transformation from noise to narrative.
+
 
