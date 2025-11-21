@@ -1,3 +1,4 @@
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Course: DSC510
 # Week: 7
@@ -45,3 +46,4 @@ def main():
 # Entry point
 if __name__ == '__main__':
     main()
+
