@@ -5,15 +5,6 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-Assignment:
-
-Within RStudio, answer the following questions using a combination of R and Markdown. The Markdown is for describing what you’re doing as always.
-
-
-
-A six-sided die is rolled repeatedly. What is the expected value average as the die is rolled more and more? The expected value for a single roll is 1+2+3+4+5+6 / 6 = 3.5. What’s wrong with the answer, just in logical terms? Create this in R (i.e., simulate many rolls and visualize the results).
-A box contains 30 red balls and 15 green balls. A ball is drawn from the box, and the color is written down. The ball is then returned to the box, and the process is repeated. What is the expected proportion of red balls drawn as the number of draws increases? Create this in R (i.e., simulate the draws from the box and visualize the results).
-Do Exercise 1 from the text (in Chapter 9). You can use the author’s code, and it is strongly suggested that instead of copying/pasting, you re-write the code. Explain each line in the code both in programming (i.e., what the R is doing) and statistics terms.
 
 
 ```{r global-setup, include=FALSE}
@@ -275,5 +266,6 @@ visual polish.
 - Structuring code for readability: Chunking simulations, labeling plots, and
 using consistent naming conventions helped both me and my instructor follow the 
 logic — I’ll continue prioritizing clarity and maintainability.
+
 
 
