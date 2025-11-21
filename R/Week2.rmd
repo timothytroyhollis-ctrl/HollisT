@@ -4,15 +4,7 @@ author: "Tim Hollis"
 date: "`r Sys.Date()`"
 output: html_document
 ---
-Taking this dataset, create the following plots in R:
 
-
-
-Bar graph showing product and the sum of sales for each.
-Pie chart showing sum of sales by region.
-Box plots for average sales by region and average quantities by region.
-Histogram of the count of orders by product.
-A radial plot showing total sales (for all products) by month.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
