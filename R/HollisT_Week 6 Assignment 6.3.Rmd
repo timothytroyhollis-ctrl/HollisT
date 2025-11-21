@@ -4,94 +4,7 @@ author: "Tim Hollis"
 date: "`r Sys.Date()`"
 output: html_document
 ---
-Assignment:
 
-This assignment has two parts. You must complete both parts.
-
-
-
-Part I
-
-
-
-You can easily determine the p-value in a dataset using the following code:
-
-
-
-data =("
-
-COLUMN COLUMN COLUMN
-
-Value  VAL  VAL
-
-Value  VAL  VAL
-
-")
-
-data_as_matrix <- as.matrix(read.table(textConnection(data),
-
-               header=TRUE,
-
-               row.names=1))
-
-fisher.test(data_as_matrix)
-
-
-
-Given that information, complete the following two examples. You’ll need R code along with Markdown.
-
-An experiment is executed to determine if spending too much time on social media hurts cognitive ability. The following data is a summary of that experiment.
-
-Social
-
-Higher
-
-Lower
-
-Y
-
-1
-
-120
-
-N
-
-118
-
-2
-
-
-
-Assuming the null hypothesis is that using social does not result in lower cognitive ability, and alpha is .05:
-
-What is the alternative hypothesis?
-What is the p-value?
-Is the null hypothesis proven or disproven and why?
-Is this a one-sided or two-sided test?
-You toss a two-sided coin 100 times. Assuming the null hypothesis is that the coin is a fair coin and alpha is .05:
-
-What’s the alternative hypothesis?
-If the coin is heads 95 times, what is the p-value?
-Is the null hypothesis proven or disproven and why?
-Is this a one-sided or two-sided test, and why?
-
-
-Part II
-
-Complete Exercise #1 from the text (at the end of Chapter 10).
-
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE,
-                      warning = FALSE, fig.align = "center",
-                      fig.width = 7, fig.height = 5)
-
-# Load Required Libraries
-library(tidyverse)
-library(cowplot)
-library(scales)
-library(grid)
-library(gtable)
 ```
 
 ## **The P-Value Report: Social Media's Impact and a Suspicious Coin**
@@ -383,5 +296,6 @@ I spent considerable time deciding between these layouts. My initial instinct wa
 ### **What I Will Stop and Continue**
 
 - **I WILL STOP:** Assuming the default settings in statistical functions are the correct ones for my specific hypothesis. I will now make a conscious habit of explicitly declaring the alternative hypothesis in every test I run when necessary.
+
 
 - **I WILL CONTINUE:** Building comprehensive summary tables (like the one for the Fisher's test) and writing detailed interpretations. I find that this practice solidifies my own understanding and creates a clear, self-contained record of the analysis and its conclusions. 
