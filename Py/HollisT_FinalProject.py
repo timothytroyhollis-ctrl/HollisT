@@ -34,7 +34,7 @@
 #    - ZIP code must be exactly 5 digits
 
 # API Key Configuration:
-#    - Replace 'YOUR_API_KEY_HERE' on line 33 with your actual OpenWeather API
+#    - Replace 'YOUR_API_KEY_HERE' on line 46 with your actual OpenWeather API
 #    key
 
 
@@ -43,8 +43,7 @@ from tkinter import ttk, messagebox
 import requests
 import datetime
 
-# Replace with your actual OpenWeather API key
-API_KEY = 'YOUR_API_KEY_HERE'
+API_KEY = 'YOUR_API_KEY_HERE' # Replace with your actual OpenWeather API key
 BASE_GEO_DIRECT = 'https://api.openweathermap.org/geo/1.0/direct'
 BASE_GEO_ZIP = 'https://api.openweathermap.org/geo/1.0/zip'
 BASE_GEO_REVERSE = 'https://api.openweathermap.org/geo/1.0/reverse'
@@ -836,3 +835,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
